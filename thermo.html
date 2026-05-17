@@ -37,39 +37,7 @@
       font-size: 13px; color: rgba(245,158,11,0.7);
       font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px;
     }
-    .tagline { font-size: 14px; color: rgba(255,255,255,0.35); font-weight: 400; margin-bottom: 28px; }
-
-    /* ── On-page estimate summary ─────────────────────────────────── */
-    .est-summary {
-      display: inline-flex; flex-direction: column; align-items: center;
-      background: rgba(255,255,255,0.055);
-      border: 1px solid rgba(245,158,11,0.18);
-      border-radius: 18px; padding: 18px 32px 16px;
-      max-width: 360px; width: 100%;
-    }
-    .est-summary-label {
-      font-size: 9.5px; text-transform: uppercase; letter-spacing: .16em;
-      color: rgba(245,158,11,0.65); font-weight: 700; margin-bottom: 6px;
-    }
-    .est-summary-amount {
-      font-size: 42px; font-weight: 900; color: #fff;
-      letter-spacing: -2.5px; line-height: 1; margin-bottom: 4px;
-    }
-    .est-summary-range {
-      font-size: 11.5px; color: rgba(255,255,255,0.35); margin-bottom: 12px;
-    }
-    .est-summary-row {
-      display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
-    }
-    .est-chip {
-      background: rgba(30,77,150,0.35); border: 1px solid rgba(30,77,150,0.4);
-      color: #93c5fd; font-size: 11px; font-weight: 600;
-      padding: 4px 11px; border-radius: 20px;
-    }
-    .est-chip-green {
-      background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3);
-      color: #6ee7b7;
-    }
+    .tagline { font-size: 14px; color: rgba(255,255,255,0.35); font-weight: 400; }
 
     #widget-root {
       position: fixed; bottom: 28px; right: 28px;
@@ -274,17 +242,6 @@
   <div class="company-name">Thermo Tetőfedés</div>
   <div class="company-sub">Tetőfedő · Bádogos · Ács</div>
   <div class="tagline">Azonnali árajánlat rendszer</div>
-
-  <div class="est-summary">
-    <div class="est-summary-label">Legutóbb kalkulált ajánlat</div>
-    <div class="est-summary-amount">2 155 000 Ft</div>
-    <div class="est-summary-range">1 890 000 – 2 520 000 Ft becsült sáv</div>
-    <div class="est-summary-row">
-      <span class="est-chip">Bramac cserép · 130 m²</span>
-      <span class="est-chip">Nagy Gábor · Eger</span>
-      <span class="est-chip est-chip-green">✓ Keret egyezik</span>
-    </div>
-  </div>
 </div>
 
 <div id="widget-root"></div>
@@ -497,12 +454,24 @@ function buildPanel() {
   const bar = document.createElement('div')
   bar.className = 'send-bar'
   bar.innerHTML = `
-    <div class="send-bar-inner">
-      <div>
-        <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:#92400e;font-weight:700;margin-bottom:2px">Kalkulált ajánlat</div>
-        <div style="font-size:19px;font-weight:900;color:#1e4d96;letter-spacing:-0.8px;line-height:1">${huf(EST.mid)}</div>
+    <div class="send-bar-inner" style="flex-direction:column;gap:10px;align-items:stretch">
+      <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.14em;color:#92400e;font-weight:700">Hogyan jött ki az ár?</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">
+        <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Bramac anyag (130m²) — 806 000 Ft</span>
+        <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Bontás — 130 000 Ft</span>
+        <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Szaruzat javítás — 90 000 Ft</span>
+        <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Kémény + 2× Velux — 147 000 Ft</span>
+        <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Ereszcsatorna — 165 000 Ft</span>
+        <span style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e4d96;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Munkadíj (3 fő · 9 nap) — 693 000 Ft</span>
+        <span style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e4d96;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">PM + tartalék — 186 000 Ft</span>
       </div>
-      <button class="owner-btn" id="ownerBtn">Elküldés a tulajdonosnak →</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-top:6px;border-top:1px dashed #fde68a">
+        <div>
+          <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:#92400e;font-weight:700;margin-bottom:2px">Összesen (becsült középérték)</div>
+          <div style="font-size:21px;font-weight:900;color:#1e4d96;letter-spacing:-1px;line-height:1">${huf(EST.mid)}</div>
+        </div>
+        <button class="owner-btn" id="ownerBtn">Elküldés a tulajdonosnak →</button>
+      </div>
     </div>`
   bar.querySelector('#ownerBtn').onclick = () => { showModal = true; render() }
   panel.appendChild(bar)
