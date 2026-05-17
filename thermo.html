@@ -400,34 +400,6 @@ function buildPanel() {
   msgs.className = 'msgs-scroll'
   msgs.id = 'msgsScroll'
 
-  // Send bar rendered inside scroll as the final chat item
-  function buildSendBar() {
-    const bar = document.createElement('div')
-    bar.style.cssText = 'background:#fff;border-radius:14px;overflow:hidden;margin:6px 0 2px;box-shadow:0 4px 24px rgba(0,0,0,0.08),0 1px 4px rgba(0,0,0,0.05);'
-    bar.innerHTML = `
-      <div style="background:linear-gradient(90deg,#fef3c7,#fffbeb);border-bottom:1.5px solid #fde68a;padding:10px 14px 8px">
-        <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.14em;color:#92400e;font-weight:700;margin-bottom:7px">Hogyan jött ki az ár?</div>
-        <div style="display:flex;flex-wrap:wrap;gap:5px">
-          <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Bramac anyag (130m²) — 806 000 Ft</span>
-          <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Bontás — 130 000 Ft</span>
-          <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Szaruzat javítás — 90 000 Ft</span>
-          <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Kémény + 2× Velux — 147 000 Ft</span>
-          <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Ereszcsatorna — 165 000 Ft</span>
-          <span style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e4d96;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Munkadíj (3 fő · 9 nap) — 693 000 Ft</span>
-          <span style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e4d96;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">PM + tartalék — 186 000 Ft</span>
-        </div>
-      </div>
-      <div style="padding:10px 14px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px">
-        <div>
-          <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:#92400e;font-weight:700;margin-bottom:2px">Összesen (becsült középérték)</div>
-          <div style="font-size:21px;font-weight:900;color:#1e4d96;letter-spacing:-1px;line-height:1">${huf(EST.mid)}</div>
-        </div>
-        <button id="ownerBtn" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;box-shadow:0 3px 10px rgba(245,158,11,0.4);flex-shrink:0">Elküldés a tulajdonosnak →</button>
-      </div>`
-    bar.querySelector('#ownerBtn').onclick = () => { showModal = true; render(); }
-    return bar
-  }
-
   MSGS.forEach((msg, i) => {
     if (msg.r === 'agent') {
       const showAvatar = i === 0 || MSGS[i-1].r === 'user'
@@ -485,6 +457,40 @@ function buildPanel() {
 function scrollBottom() {
   const el = document.getElementById('msgsScroll')
   if (el) el.scrollTop = el.scrollHeight
+}
+
+// ── Send-to-owner bar (rendered inside scroll, last chat item) ────────────────
+function buildSendBar() {
+  const bar = document.createElement('div')
+  bar.style.cssText = 'background:#fff;border-radius:14px;overflow:hidden;margin:6px 0 2px;box-shadow:0 4px 24px rgba(0,0,0,0.08),0 1px 4px rgba(0,0,0,0.05);'
+  const top = document.createElement('div')
+  top.style.cssText = 'background:linear-gradient(90deg,#fef3c7,#fffbeb);border-bottom:1.5px solid #fde68a;padding:10px 14px 8px'
+  top.innerHTML = `
+    <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.14em;color:#92400e;font-weight:700;margin-bottom:7px">Hogyan jött ki az ár?</div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px">
+      <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Bramac anyag (130m²) — 806 000 Ft</span>
+      <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Bontás — 130 000 Ft</span>
+      <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Szaruzat javítás — 90 000 Ft</span>
+      <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Kémény + 2× Velux — 147 000 Ft</span>
+      <span style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Ereszcsatorna — 165 000 Ft</span>
+      <span style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e4d96;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">Munkadíj (3 fő · 9 nap) — 693 000 Ft</span>
+      <span style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e4d96;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px">PM + tartalék — 186 000 Ft</span>
+    </div>`
+  const bottom = document.createElement('div')
+  bottom.style.cssText = 'padding:10px 14px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px'
+  const amtDiv = document.createElement('div')
+  amtDiv.innerHTML = `
+    <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:#92400e;font-weight:700;margin-bottom:2px">Összesen (becsült középérték)</div>
+    <div style="font-size:21px;font-weight:900;color:#1e4d96;letter-spacing:-1px;line-height:1">${huf(EST.mid)}</div>`
+  const btn = document.createElement('button')
+  btn.textContent = 'Elküldés a tulajdonosnak →'
+  btn.style.cssText = 'background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;box-shadow:0 3px 10px rgba(245,158,11,0.4);flex-shrink:0'
+  btn.onclick = function() { showModal = true; render() }
+  bottom.appendChild(amtDiv)
+  bottom.appendChild(btn)
+  bar.appendChild(top)
+  bar.appendChild(bottom)
+  return bar
 }
 
 // ── Estimate card ─────────────────────────────────────────────────────────────
