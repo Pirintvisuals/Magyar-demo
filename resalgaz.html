@@ -45,6 +45,30 @@
       align-items: flex-end; gap: 12px;
     }
 
+    @media (max-width: 520px) {
+      #widget-root {
+        bottom: 16px; right: 16px; left: 16px;
+      }
+      .chat-panel {
+        width: 100% !important;
+        height: calc(100dvh - 96px) !important;
+        border-radius: 18px !important;
+      }
+      .modal-overlay {
+        padding: 0 !important;
+        align-items: flex-end !important;
+      }
+      .modal-card {
+        border-radius: 22px 22px 0 0 !important;
+        max-height: 92dvh !important;
+      }
+      .tooltip {
+        font-size: 12px !important;
+        padding: 8px 13px !important;
+      }
+      .company-name { font-size: 22px !important; }
+    }
+
     @keyframes chatOpen {
       from { opacity: 0; transform: translateY(32px) scale(0.95); }
       to   { opacity: 1; transform: translateY(0) scale(1); }
