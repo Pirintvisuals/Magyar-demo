@@ -210,20 +210,36 @@
 
 <script>
 const MSGS = [
-  { r:'agent', t:'Szia! Milyen munkára lenne szüksége — felújítás, új építés, vagy javítás?' },
+  { r:'agent', t:'Szia! Milyen munkára lenne szüksége — fürdőszoba felújítás, konyha, teljes lakás, vagy más?' },
   { r:'user',  t:'Fürdőszoba teljes felújítás' },
-  { r:'agent', t:'Értem. Mekkora a fürdőszoba nagyjából négyzetméterben?' },
-  { r:'user',  t:'Kb. 8 m²' },
-  { r:'agent', t:'Van már meglévő burkolat amit le kell bontani, vagy teljesen üres az alap?' },
-  { r:'user',  t:'Van régi csempe, le kell bontani' },
-  { r:'agent', t:'Milyen minőségű anyagokkal szeretné? (standard / közép / prémium)' },
-  { r:'user',  t:'Közép kategória' },
-  { r:'agent', t:'Kell vízvezeték-szerelés is — zuhany, mosdó, WC csere?' },
-  { r:'user',  t:'Igen, mindent cserélünk — zuhanykabin, mosdó, WC' },
-  { r:'agent', t:'Villanyszerelési munka szükséges — lámpa, aljzat, ventilátor?' },
-  { r:'user',  t:'Igen, új lámpa és aljzat kell' },
-  { r:'agent', t:'Mikor szeretné elkezdeni? Van konkrét határidő?' },
-  { r:'user',  t:'Minél hamarabb, 1 hónapon belül szeretnénk' },
+  { r:'agent', t:'Mekkora a fürdőszoba nagyjából négyzetméterben?' },
+  { r:'user',  t:'Kb. 9 m²' },
+  { r:'agent', t:'Milyen típusú az épület — tégla, panel, vagy újépítés?' },
+  { r:'user',  t:'Téglaépület, 1970-es évekből' },
+  { r:'agent', t:'Teljes bontás szükséges? Le kell a vakolat is, vagy csak a csempe?' },
+  { r:'user',  t:'Teljes bontás kell, a vakolat is rossz' },
+  { r:'agent', t:'Kell válaszfal-bontás vagy áthelyezés, esetleg ajtónyílás módosítás?' },
+  { r:'user',  t:'Nem, az alaprajz marad, csak az ajtó helye jó' },
+  { r:'agent', t:'Szeretne padlófűtést beépíteni?' },
+  { r:'user',  t:'Igen, elektromos padlófűtést kérünk' },
+  { r:'agent', t:'Milyen csempe kategóriát tervez? (20×20 standard / 60×60 nagyformátumú / természetes kő / prémium)' },
+  { r:'user',  t:'Nagyformátumú, 60×60-as csempe' },
+  { r:'agent', t:'Mekkora magasságig csempézzen a falon? (derékig / 2 m / teljes falmagasság)' },
+  { r:'user',  t:'Teljes falmagasság, kb. 2,6 m' },
+  { r:'agent', t:'Zuhanykabin, kád, vagy mindkettő?' },
+  { r:'user',  t:'Beépített zuhanykabin, kád nem kell' },
+  { r:'agent', t:'Milyen szanitert tervez — fali WC, mosdóbútor, tükrös szekrény?' },
+  { r:'user',  t:'Fali WC, fali mosdó mosdóbútorral, tükrös felső szekrény' },
+  { r:'agent', t:'A vízvezetékek állapota — teljes csőcsere szükséges, vagy csak a szerelvények?' },
+  { r:'user',  t:'Teljes csőcsere kell, minden régi' },
+  { r:'agent', t:'Villanyszerelés — új elosztó, ELCB védelem, aljzatok, lámpa?' },
+  { r:'user',  t:'Igen, teljesen új elosztó is kell' },
+  { r:'agent', t:'Kell szellőzés — ventilátor páraérzékelővel?' },
+  { r:'user',  t:'Igen, páraérzékelős ventilátor' },
+  { r:'agent', t:'Az ingatlan hányadik emeleten van? (lépcsőház, darumunkák miatt fontos)' },
+  { r:'user',  t:'3. emelet, lift van' },
+  { r:'agent', t:'Mikor kellene elkezdeni a munkát?' },
+  { r:'user',  t:'2-3 hónapon belül szeretnénk' },
   { r:'agent', t:'Mi az irányítószáma?' },
   { r:'user',  t:'1121' },
   { r:'agent', t:'A neve?' },
@@ -232,39 +248,44 @@ const MSGS = [
   { r:'user',  t:'06 30 456 7890' },
   { r:'agent', t:'Az e-mail-címe?' },
   { r:'user',  t:'varga.laszlo@gmail.com' },
-  { r:'agent', t:'Köszönöm László — összeállítom a becslést.' },
+  { r:'agent', t:'Köszönöm László — összeállítom a részletes becslést.' },
   { r:'estimate' }
 ]
 
 const EST = {
-  lower: 850_000, mid: 1_100_000, upper: 1_650_000,
-  status: 'SÜRGŐS',
+  lower: 2_200_000, mid: 2_950_000, upper: 3_800_000,
+  status: 'KOMPLEX',
   items: [
-    { label:'Bontás + törmelékszállítás',          note:'régi csempe-, szaniter bontás, helyszíni elszállítás',         amt:  80_000 },
-    { label:'Vízszigetelés',                        note:'nedves helyiség teljes vízszigetelése (KABE/Combiflex)',        amt:  75_000 },
-    { label:'Falburkolás (8 m²)',                   note:'közép kategóriás csempe anyag + munkadíj',                     amt: 220_000 },
-    { label:'Padlóburkolás (4 m²)',                 note:'csúszásmentes padlólap anyag + munkadíj',                      amt: 120_000 },
-    { label:'Vízvezeték-szerelés',                  note:'bekötések + csőcsere, nyomáspróba',                            amt: 195_000 },
-    { label:'Szaniterek beépítése',                 note:'zuhanykabin, mosdó, WC + beépítési munkadíj',                  amt: 250_000 },
-    { label:'Villanyszerelés',                      note:'lámpa + aljzat telepítés, ELCB védelem',                       amt:  90_000 },
-    { label:'Glettelés + festés + befejező',        note:'falfelület-kezelés, festés, szilikon fugázás',                 amt:  70_000 },
+    { label:'Teljes bontás + vakolat + törmelékszállítás', note:'csempe, szaniter, vakolat bontás, 3. emeleti kiszállítás',   amt: 195_000 },
+    { label:'Alapvakolás + glettelés',                     note:'falfelület-előkészítés, simítóvakolat',                      amt: 175_000 },
+    { label:'Vízszigetelés (KABE Combiflex)',               note:'nedves helyiség teljes vízszigetelése, 2 réteg',             amt: 110_000 },
+    { label:'Elektromos padlófűtés (9 m²)',                note:'fűtőszőnyeg + termosztát + aljzatbeton',                    amt: 195_000 },
+    { label:'Nagyformátumú padlólap 60×60 (9 m²)',         note:'csúszásgátló porcelán lap anyag + fugázás',                 amt: 220_000 },
+    { label:'Nagyformátumú falicsempe 60×60 (26 m²)',      note:'teljes falmagasság 2,6 m, anyag + munkadíj',                amt: 620_000 },
+    { label:'Beépített zuhanykabin',                       note:'üveg zuhanykabinrendszer + zuhanytálca + szerelés',          amt: 320_000 },
+    { label:'Fali WC + szerelt fal + tartály',             note:'Geberit/Grohe falsík alatti tartály + beépítés',            amt: 215_000 },
+    { label:'Mosdóbútor + tükrös szekrény',                note:'fali mosdó + bútor + tükrös felső szekrény, beépítve',      amt: 245_000 },
+    { label:'Vízvezeték teljes csőcsere',                  note:'rézcső / PEX csőrendszer, bekötések, nyomáspróba',          amt: 285_000 },
+    { label:'Villanyszerelés + új elosztó',                note:'ELCB, aljzatok, lámpacsatlakozások, elosztószekrény',       amt: 210_000 },
+    { label:'Páraérzékelős ventilátor',                    note:'csőventilátor + páraérzékelő + vezérlés beépítése',         amt:  75_000 },
+    { label:'Befejező munkák + szilikon fugázás',          note:'élvédők, szilikon illesztések, takarólécek, tisztítás',     amt:  85_000 },
   ],
   customer: {
     'Név':'Varga László',
     'Telefon':'06 30 456 7890',
     'E-mail':'varga.laszlo@gmail.com',
     'Irányítószám':'1121 — Budapest XII.',
-    'Munkaterület':'Fürdőszoba — 8 m²',
-    'Anyagminőség':'Közép kategória',
+    'Munkaterület':'Fürdőszoba — 9 m², téglaépület, 3. emelet',
+    'Anyagminőség':'Prémium (60×60 nagyformátumú)',
   },
   extras: [
-    { icon:'🚿', label:'Projekt típus',   val:'Fürdőszoba teljes felújítás' },
-    { icon:'📐', label:'Terület',          val:'8 m² — bontással' },
-    { icon:'🔧', label:'Szakmák',          val:'Kőműves + vízvezeték + villany' },
-    { icon:'📅', label:'Határidő',         val:'1 hónapon belül' },
+    { icon:'🚿', label:'Projekt',      val:'Fürdőszoba teljes felújítás' },
+    { icon:'📐', label:'Terület',       val:'9 m² — teljes bontással' },
+    { icon:'🔧', label:'Szakmák',       val:'Kőműves + burkoló + víz + villany' },
+    { icon:'📅', label:'Határidő',      val:'2-3 hónapon belül' },
   ],
-  timing: 'Sürgős — 1 hónapon belül',
-  score: 94, scoreLabel: 'Prémium Érdeklődő', scoreColor: '#d97706',
+  timing: '2-3 hónapon belül',
+  score: 96, scoreLabel: 'Prémium Érdeklődő', scoreColor: '#d97706',
   clientCity: 'Budapest XII.', clientZip: '1121',
   companyCity: 'Sopron', distanceKm: 220,
 }
@@ -413,16 +434,21 @@ function buildCostMessage() {
   bubble.className = 'msg-agent-bubble'
   bubble.style.cssText = 'max-width:92%;padding:12px 14px;'
   bubble.innerHTML = `
-    <div style="font-size:12.5px;color:#374151;font-weight:600;margin-bottom:10px">Összeállítottam a becslést, László. Így jött ki a szám:</div>
+    <div style="font-size:12.5px;color:#374151;font-weight:600;margin-bottom:10px">Összeállítottam a részletes becslést, László. Így jött ki a szám:</div>
     <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px;">
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Bontás + törmelékszállítás</span><span style="font-weight:700;color:#d97706">80 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Vízszigetelés</span><span style="font-weight:700;color:#d97706">75 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Falburkolás (8 m²)</span><span style="font-weight:700;color:#d97706">220 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Padlóburkolás (4 m²)</span><span style="font-weight:700;color:#d97706">120 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Vízvezeték-szerelés</span><span style="font-weight:700;color:#d97706">195 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Szaniterek beépítése</span><span style="font-weight:700;color:#d97706">250 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Villanyszerelés</span><span style="font-weight:700;color:#d97706">90 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;"><span>Glettelés + festés + befejező</span><span style="font-weight:700;color:#d97706">70 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Teljes bontás + vakolat + törmelék</span><span style="font-weight:700;color:#d97706">195 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Alapvakolás + glettelés</span><span style="font-weight:700;color:#d97706">175 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Vízszigetelés (KABE Combiflex)</span><span style="font-weight:700;color:#d97706">110 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Elektromos padlófűtés (9 m²)</span><span style="font-weight:700;color:#d97706">195 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Padlólap 60×60 (9 m²)</span><span style="font-weight:700;color:#d97706">220 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Falicsempe 60×60 teljes mag. (26 m²)</span><span style="font-weight:700;color:#d97706">620 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Beépített zuhanykabin</span><span style="font-weight:700;color:#d97706">320 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Fali WC + szerelt fal + tartály</span><span style="font-weight:700;color:#d97706">215 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Mosdóbútor + tükrös szekrény</span><span style="font-weight:700;color:#d97706">245 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Vízvezeték teljes csőcsere</span><span style="font-weight:700;color:#d97706">285 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Villanyszerelés + új elosztó</span><span style="font-weight:700;color:#d97706">210 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Páraérzékelős ventilátor</span><span style="font-weight:700;color:#d97706">75 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;"><span>Befejező munkák + szilikon fugázás</span><span style="font-weight:700;color:#d97706">85 000 Ft</span></div>
     </div>
     <div style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
       <div>
@@ -432,7 +458,7 @@ function buildCostMessage() {
       </div>
       <div style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);border-radius:8px;padding:4px 10px;text-align:center;">
         <div style="font-size:9px;color:#92400e;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Határidő</div>
-        <div style="font-size:11px;color:#92400e;font-weight:700">⚡ 1 hónapon belül</div>
+        <div style="font-size:11px;color:#92400e;font-weight:700">📅 2-3 hónap</div>
       </div>
     </div>`
 
@@ -531,7 +557,7 @@ function buildModal() {
             </div>
             <div style="text-align:right">
               <div style="font-size:9.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:3px">Határidő</div>
-              <div style="font-size:13px;font-weight:700;color:#d97706;background:#fffbeb;padding:4px 12px;border-radius:20px">⚡ 1 hónapon belül</div>
+              <div style="font-size:13px;font-weight:700;color:#d97706;background:#fffbeb;padding:4px 12px;border-radius:20px">📅 2-3 hónapon belül</div>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:8px 12px">
@@ -540,19 +566,20 @@ function buildModal() {
                 <path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <span style="font-size:12.5px;font-weight:700;color:#15803d">Komplex projekt — kőműves + vízvezeték + villany egyszerre</span>
+            <span style="font-size:12.5px;font-weight:700;color:#15803d">Komplex projekt — kőműves + burkoló + vízvezeték + villany egyszerre</span>
           </div>
         </div>
 
         <div style="padding:12px 16px;border-bottom:1px solid #e5e7eb;background:#fff">
           <div style="font-size:9.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px">Projekt részletei</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px">
-            <span style="font-size:12px;font-weight:600;color:#d97706;background:#fffbeb;padding:4px 12px;border-radius:20px">🚿 Fürdőszoba 8 m²</span>
-            <span style="font-size:12px;font-weight:600;color:#d97706;background:#fffbeb;padding:4px 12px;border-radius:20px">Bontás szükséges</span>
-            <span style="font-size:12px;font-weight:600;color:#d97706;background:#fffbeb;padding:4px 12px;border-radius:20px">Közép kat. anyag</span>
-            <span style="font-size:12px;font-weight:600;color:#d97706;background:#fffbeb;padding:4px 12px;border-radius:20px">Zuhanykabin + mosdó + WC</span>
-            <span style="font-size:12px;font-weight:600;color:#d97706;background:#fffbeb;padding:4px 12px;border-radius:20px">Villany is kell</span>
-            <span style="font-size:12px;font-weight:600;color:#92400e;background:#fef3c7;border:1px solid #fde68a;padding:4px 12px;border-radius:20px">⚡ Sürgős</span>
+            <span style="font-size:12px;font-weight:600;color:#d97706;background:#fffbeb;padding:4px 12px;border-radius:20px">🚿 Fürdőszoba 9 m²</span>
+            <span style="font-size:12px;font-weight:600;color:#d97706;background:#fffbeb;padding:4px 12px;border-radius:20px">Teljes bontás + vakolat</span>
+            <span style="font-size:12px;font-weight:600;color:#d97706;background:#fffbeb;padding:4px 12px;border-radius:20px">Téglaépület — 3. emelet</span>
+            <span style="font-size:12px;font-weight:600;color:#d97706;background:#fffbeb;padding:4px 12px;border-radius:20px">60×60 nagyformátumú csempe</span>
+            <span style="font-size:12px;font-weight:600;color:#d97706;background:#fffbeb;padding:4px 12px;border-radius:20px">Elektromos padlófűtés</span>
+            <span style="font-size:12px;font-weight:600;color:#d97706;background:#fffbeb;padding:4px 12px;border-radius:20px">Teljes csőcsere + új elosztó</span>
+            <span style="font-size:12px;font-weight:600;color:#92400e;background:#fef3c7;border:1px solid #fde68a;padding:4px 12px;border-radius:20px">📅 2-3 hónapon belül</span>
           </div>
         </div>
 
