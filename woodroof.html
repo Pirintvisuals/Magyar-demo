@@ -250,7 +250,7 @@ const MSGS = [
   { r:'agent', t:'Mi az irányítószáma?' },
   { r:'user',  t:'2400' },
   { r:'agent', t:'Milyen kereten belül gondolkodik?' },
-  { r:'user',  t:'1,2 és 1,5 millió forint között' },
+  { r:'user',  t:'2,5 és 3 millió forint között' },
   { r:'agent', t:'És a neve?' },
   { r:'user',  t:'Varga Péter' },
   { r:'agent', t:'Milyen telefonon tudjuk elérni, Péter?' },
@@ -263,17 +263,17 @@ const MSGS = [
 
 // ── Estimate data ─────────────────────────────────────────────────────────────
 const EST = {
-  lower: 1_160_000, mid: 1_340_000, upper: 1_570_000,
+  lower: 2_180_000, mid: 2_640_000, upper: 3_190_000,
   status: 'PRIORITÁS',
   items: [
-    { label:'BSH ragasztott szarufák + szelemenfák',  note:'120 m² nyeregtető, 35°, lépcsős szarufaköz',     amt: 390_000 },
-    { label:'Alátétfólia (120 m²)',                    note:'diffúziós fólia, szélcsíkkal rögzítve',           amt:  48_000 },
-    { label:'Léc + ellenléc (≈240 fm)',                note:'impregnált fenyő, 40×60 mm',                     amt:  52_000 },
-    { label:'Régi szaruzat bontása + szállítás',       note:'elbontás, zsákba szortírozás, törmelékfuvar',    amt: 115_000 },
-    { label:'Szaruzat csere — munkadíj',               note:'4 fős csapat, 7 munkanap',                       amt: 588_000 },
-    { label:'Kémény körüli ácsillesztés',              note:'kémény körüli szarufa kialakítás, stabilizálás', amt:  55_000 },
-    { label:'Projekt menedzsment (5%)',                note:'5% általános és koordinációs költség',            amt:  62_400 },
-    { label:'Tartalék (2%)',                           note:'2% előre nem látható munkákra',                   amt:  28_800 },
+    { label:'BSH ragasztott szarufák + szelemenfák',  note:'120 m² nyeregtető, 35°, egyedi méretvágás',      amt: 780_000 },
+    { label:'Alátétfólia (120 m²)',                    note:'páradiffúziós, UV-álló, szélcsíkos rögzítés',    amt:  98_000 },
+    { label:'Léc + ellenléc (≈240 fm)',                note:'impregnált fenyő 40×60 mm, kétszeres réteg',     amt: 105_000 },
+    { label:'Régi szaruzat bontása + szállítás',       note:'teljes elbontás, konténeres törmelékszállítás',  amt: 230_000 },
+    { label:'Szaruzat csere — munkadíj',               note:'4 fős csapat, 9 munkanap, emelési költség',      amt:1_148_000 },
+    { label:'Kémény körüli ácsillesztés',              note:'egyedi szarufa-kialakítás, stabilizálás',        amt:  98_000 },
+    { label:'Projekt menedzsment (6%)',                note:'6% koordinációs és általános költség',            amt: 146_280 },
+    { label:'Tartalék (3%)',                           note:'3% előre nem látható munkákra',                   amt:  73_140 },
   ],
   customer: {
     'Név':'Varga Péter',
@@ -281,7 +281,7 @@ const EST = {
     'E-mail':'varga.peter@freemail.hu',
     'Irányítószám':'2400 — Dunaújváros',
     'Munka típusa':'BSH szaruzat-csere — 120 m²',
-    'Saját keret':'1 200 000 – 1 500 000 Ft',
+    'Saját keret':'2 500 000 – 3 000 000 Ft',
   },
   extras: [
     { icon:'🪵', label:'Anyag', val:'BSH ragasztott szerelt fa' },
@@ -450,13 +450,13 @@ function buildCostMessage() {
   bubble.innerHTML = `
     <div style="font-size:12.5px;color:#374151;font-weight:600;margin-bottom:10px">Összeállítottam az ajánlatot Péter. Így jött ki a szám:</div>
     <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px;">
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>BSH szarufák + szelemenfák</span><span style="font-weight:700;color:#292524">390 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Alátétfólia (120 m²)</span><span style="font-weight:700;color:#292524">48 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Léc + ellenléc (≈240 fm)</span><span style="font-weight:700;color:#292524">52 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Régi szaruzat bontása + fuvar</span><span style="font-weight:700;color:#292524">115 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Szaruzat csere — munkadíj (4 fő, 7 nap)</span><span style="font-weight:700;color:#292524">588 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Kémény körüli ácsillesztés</span><span style="font-weight:700;color:#292524">55 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;"><span>PM + tartalék</span><span style="font-weight:700;color:#292524">91 200 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>BSH szarufák + szelemenfák</span><span style="font-weight:700;color:#292524">780 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Alátétfólia (120 m²)</span><span style="font-weight:700;color:#292524">98 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Léc + ellenléc (≈240 fm)</span><span style="font-weight:700;color:#292524">105 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Régi szaruzat bontása + fuvar</span><span style="font-weight:700;color:#292524">230 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Szaruzat csere — munkadíj (4 fő, 9 nap)</span><span style="font-weight:700;color:#292524">1 148 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Kémény körüli ácsillesztés</span><span style="font-weight:700;color:#292524">98 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;"><span>PM + tartalék</span><span style="font-weight:700;color:#292524">219 420 Ft</span></div>
     </div>
     <div style="background:linear-gradient(135deg,#fef9f0,#fef3c7);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
       <div>
@@ -573,8 +573,8 @@ function buildModal() {
             </div>
             <div style="text-align:right">
               <div style="font-size:9.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:3px">Vevő kerete</div>
-              <div style="font-size:14px;font-weight:700;color:#111827">1 200 000 –</div>
-              <div style="font-size:14px;font-weight:700;color:#111827">1 500 000 Ft</div>
+              <div style="font-size:14px;font-weight:700;color:#111827">2 500 000 –</div>
+              <div style="font-size:14px;font-weight:700;color:#111827">3 000 000 Ft</div>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:8px 12px">
