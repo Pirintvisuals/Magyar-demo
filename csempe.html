@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Csempe Szabó · Azonnali Árajánlat</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #111827;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .page-center { text-align: center; color: #fff; user-select: none; }
+    .logo-wrap {
+      width: 80px; height: 80px; border-radius: 50%;
+      overflow: hidden; margin: 0 auto 18px;
+      border: 2px solid rgba(234,88,12,0.5);
+      box-shadow: 0 0 0 4px rgba(55,65,81,0.5);
+      background: #1f2937;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .logo-fallback {
+      font-size: 28px; font-weight: 900;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .company-name {
+      font-size: 30px; font-weight: 800;
+      letter-spacing: -0.6px; color: #ffffff; margin-bottom: 6px;
+    }
+    .company-sub {
+      font-size: 13px; color: rgba(249,115,22,0.85);
+      font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px;
+    }
+    .tagline { font-size: 14px; color: rgba(255,255,255,0.35); font-weight: 400; }
+
+    #widget-root {
+      position: fixed; bottom: 28px; right: 28px;
+      z-index: 9999; display: flex; flex-direction: column;
+      align-items: flex-end; gap: 12px;
+    }
+
+    @keyframes chatOpen {
+      from { opacity: 0; transform: translateY(32px) scale(0.95); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes tooltipPop {
+      from { opacity: 0; transform: scale(0.88) translateY(8px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes crmSlide {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.94) translateY(20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .chat-panel {
+      animation: chatOpen 0.42s cubic-bezier(0.16,1,0.3,1) both;
+      width: 440px;
+      height: clamp(480px, calc(100vh - 120px), 700px);
+      display: flex; flex-direction: column;
+      background: #ffffff; border-radius: 22px; overflow: hidden;
+      box-shadow: 0 32px 96px rgba(0,0,0,0.55), 0 8px 32px rgba(0,0,0,0.25), 0 2px 8px rgba(234,88,12,0.1);
+    }
+    .chat-header {
+      background: linear-gradient(135deg, #111827 0%, #1f2937 60%, #374151 100%);
+      padding: 14px 18px 13px;
+      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+    }
+    .msgs-scroll {
+      flex: 1; overflow-y: auto;
+      padding: 18px 14px 18px 16px;
+      display: flex; flex-direction: column; gap: 8px;
+      background: #f9f8f7;
+      scrollbar-width: thin; scrollbar-color: rgba(234,88,12,0.2) transparent;
+    }
+    .msgs-scroll::-webkit-scrollbar { width: 3px; }
+    .msgs-scroll::-webkit-scrollbar-thumb { background: rgba(234,88,12,0.2); border-radius: 10px; }
+
+    .msg-agent { display: flex; align-items: flex-end; gap: 8px; }
+    .msg-agent-bubble {
+      background: #ffffff; color: #0f172a;
+      border-radius: 18px 18px 18px 5px;
+      padding: 11px 15px; max-width: 80%;
+      font-size: 13.5px; line-height: 1.55;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
+    }
+    .msg-user { display: flex; justify-content: flex-end; }
+    .msg-user-bubble {
+      background: linear-gradient(135deg, #374151, #1f2937);
+      color: #ffffff; border-radius: 18px 18px 5px 18px;
+      padding: 11px 15px; max-width: 80%;
+      font-size: 13.5px; line-height: 1.55;
+      box-shadow: 0 2px 8px rgba(55,65,81,0.4);
+    }
+
+    .qr-area {
+      padding: 8px 14px 10px; background: #fff;
+      border-top: 1px solid #f3ede5;
+      display: flex; flex-wrap: wrap; gap: 6px; flex-shrink: 0;
+    }
+    .qr-btn {
+      padding: 6px 14px; background: #fff7ed; color: #c2410c;
+      border: 1px solid #fed7aa; border-radius: 20px;
+      font-size: 12.5px; font-weight: 600;
+      cursor: default; font-family: inherit;
+    }
+
+    .input-area {
+      padding: 10px 14px 10px; background: #fff;
+      border-top: 1px solid #f3ede5; flex-shrink: 0;
+    }
+    .input-row { display: flex; gap: 8px; align-items: center; }
+    .input-field {
+      flex: 1; padding: 11px 16px; border-radius: 22px;
+      border: 1.5px solid #d1d5db; font-size: 13.5px;
+      outline: none; background: #f9f8f7; color: #111827; font-family: inherit;
+    }
+    .send-btn {
+      width: 42px; height: 42px; flex-shrink: 0;
+      background: linear-gradient(135deg, #374151, #1f2937);
+      color: #fff; border: none; border-radius: 50%;
+      cursor: not-allowed; display: flex; align-items: center; justify-content: center;
+      opacity: 0.4;
+    }
+
+    .tooltip {
+      animation: tooltipPop 0.26s cubic-bezier(0.16,1,0.3,1) both;
+      background: #ffffff; color: #1f2937;
+      font-size: 13px; font-weight: 600;
+      padding: 9px 16px; border-radius: 22px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.13), 0 2px 6px rgba(0,0,0,0.07);
+      white-space: nowrap; position: relative; letter-spacing: -0.1px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    }
+    .tooltip::after {
+      content: ''; position: absolute; bottom: -7px; right: 30px;
+      width: 0; height: 0;
+      border-left: 7px solid transparent; border-right: 7px solid transparent;
+      border-top: 8px solid #ffffff;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.06));
+    }
+
+    .bubble-btn {
+      width: 62px; height: 62px; border-radius: 50%;
+      border: 2.5px solid #ffffff; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
+      padding: 0;
+    }
+    .bubble-btn:hover { transform: scale(1.07); }
+    .bubble-open  { background: linear-gradient(135deg, #374151, #1f2937); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+    .bubble-closed { background: linear-gradient(135deg, #ea580c, #111827); box-shadow: 0 6px 24px rgba(234,88,12,0.55), 0 2px 8px rgba(0,0,0,0.2); }
+
+    .estimate-card, .crm-card {
+      background: #fff; border-radius: 18px; overflow: hidden; margin: 6px 0;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.1), 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .crm-card { animation: crmSlide 0.34s cubic-bezier(0.16,1,0.3,1) both; }
+
+    .close-btn {
+      color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.12);
+      border: none; cursor: pointer; border-radius: 8px;
+      width: 32px; height: 32px; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0;
+      transition: opacity 0.15s;
+    }
+    .close-btn:hover { opacity: 0.65; }
+
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(5,5,10,0.87);
+      backdrop-filter: blur(6px);
+      z-index: 99999;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-card {
+      animation: modalIn 0.38s cubic-bezier(0.16,1,0.3,1) both;
+      background: #fff; border-radius: 22px;
+      max-width: 460px; width: 100%;
+      max-height: calc(100vh - 40px); overflow-y: auto;
+      box-shadow: 0 48px 140px rgba(0,0,0,0.65), 0 16px 48px rgba(0,0,0,0.3);
+      scrollbar-width: thin; scrollbar-color: rgba(234,88,12,0.2) transparent;
+    }
+    .modal-card::-webkit-scrollbar { width: 3px; }
+    .modal-card::-webkit-scrollbar-thumb { background: rgba(234,88,12,0.22); border-radius: 10px; }
+  </style>
+</head>
+<body>
+
+<div class="page-center">
+  <div class="logo-wrap">
+    <img src="https://graph.facebook.com/csempeszabo/picture?type=large"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+         alt="Csempe Szabó logo">
+    <span class="logo-fallback" style="display:none">CS</span>
+  </div>
+  <div class="company-name">Csempe Szabó</div>
+  <div class="company-sub">Hidegburkolás · Fürdőszoba · Csempézés</div>
+  <div class="tagline">Azonnali árajánlat rendszer</div>
+</div>
+
+<div id="widget-root"></div>
+
+<script>
+// ── Demo conversation ─────────────────────────────────────────────────────────
+const MSGS = [
+  { r:'agent', t:'Szia! Burkolást, fürdőszoba-csempézést vagy hidegburkolást tervezel?' },
+  { r:'user',  t:'Igen — teljes fürdőszoba felújítást, de a WC és a konyha padlója is kellene' },
+  { r:'agent', t:'Jól hangzik. Hány helyiséget érint összesen a burkolás?' },
+  { r:'user',  t:'Fő fürdőszoba, egy külön WC, konyha padlója és az előszoba' },
+  { r:'agent', t:'Mindenhol fal- és padlóburkolatot cserélünk, vagy valahol csak padló?' },
+  { r:'user',  t:'A fürdőszobában és WC-ben mindkettő, konyhában és előszobában csak padló' },
+  { r:'agent', t:'Mekkora a fő fürdőszoba alapterülete, és milyen magas a mennyezet?' },
+  { r:'user',  t:'Kb. 9 m², a mennyezet 2,7 méter — szeretném teljesen felcsempézni' },
+  { r:'agent', t:'A WC és az előszoba mekkora?' },
+  { r:'user',  t:'WC kb. 2,5 m², előszoba 7 m²' },
+  { r:'agent', t:'A konyha padlóterülete?' },
+  { r:'user',  t:'Kb. 12 m²' },
+  { r:'agent', t:'Van meglévő burkolat, amit el kell bontani, vagy üres aljzatba dolgozunk?' },
+  { r:'user',  t:'Mindenütt van régi csempe, le kell szedni' },
+  { r:'agent', t:'Rendben, bontást és törmelékszállítást is kalkulálom. Milyen lapméretben gondolkodik? Nagy formátum (60×120), normál (60×60) vagy más?' },
+  { r:'user',  t:'A fürdőszoba falára nagyobb lapot szeretnék — 60×120-at, padlóra 60×60' },
+  { r:'agent', t:'Szép döntés — a 60×120 kevesebb fugasorral tágasabbá teszi a teret. Milyen stílusban képzeli el? Modern minimal, természetes kő hatású, mediterrán?' },
+  { r:'user',  t:'Modern, visszafogott — fehér vagy beton-szürke megjelenés, esetleg egy kis dekor' },
+  { r:'agent', t:'Van-e padlófűtés, vagy tervez-e padlófűtést beépíteni a fürdőszobába?' },
+  { r:'user',  t:'Igen, elektromos fűtőszőnyeget szeretnék a burkolat alá' },
+  { r:'agent', t:'Padlófűtés-kompatibilis ragasztót és kivitelezési módot alkalmazunk — ezt külön kalkulálom. A fürdőszobában van zuhanykabin vagy fürdőkád?' },
+  { r:'user',  t:'Beépített zuhanytálca lesz és mellette kád is' },
+  { r:'agent', t:'Akkor kétrétegű vízszigetelést számolok az érintett felületre — ez kulcsfontosságú a párásabb zónákban. Milyen állapotban van az aljzat?' },
+  { r:'user',  t:'Az előszobában kicsit egyenetlen, a fürdőben valószínűleg szintezni kell' },
+  { r:'agent', t:'Kalkulálom az aljzatkiegyenlítést is. Tervez-e dekorcsíkot, mozaikbetétet vagy speciális fugamintát valahol?' },
+  { r:'user',  t:'Igen — egy dekorcsík a zuhanytálca mellé, és a WC-ben is szeretnék valami mintás elemet' },
+  { r:'agent', t:'Szép részlet. Van-e konkrét csempe márka vagy kollekció amit szeret, vagy ránk bízza a kiválasztást?' },
+  { r:'user',  t:'Nem ragaszkodom márkához, de minőségi legyen — néztük az Aparicit és a Marazzi kollekciót' },
+  { r:'agent', t:'Mindkettő prémium minőség, jól dolgozunk velük. A konyhai padlóhoz milyen lapot gondol — antracit, terrakotta, vagy más árnyalat?' },
+  { r:'user',  t:'Antracit, ugyanolyan 60×60-as méret mint a fürdőszobai padló' },
+  { r:'agent', t:'Egységes, modern megjelenés lesz az egész lakásban. Az előszobai padló?' },
+  { r:'user',  t:'Ott lehet szürke, természetes kő hatású lap — szintén 60×60' },
+  { r:'agent', t:'A WC falán milyen magasságig csempézünk? Teljes mennyezetig, vagy csak 2,1–2,2 m-ig?' },
+  { r:'user',  t:'Teljes mennyezetig, ott is kb. 2,7 m' },
+  { r:'agent', t:'A fugaszín milyen legyen? Fehér, szürke, vagy kontrasztos sötét?' },
+  { r:'user',  t:'Szürke — a beton-szürkéhez illő semleges árnyalat' },
+  { r:'agent', t:'Rendben. A belső ablakpárkányok vagy küszöbök érintve vannak, vagy csak fal és padló?' },
+  { r:'user',  t:'Nem, csak a burkolat' },
+  { r:'agent', t:'A bontási törmeléket konténerrel szállítjuk el — ez benne van az ajánlatban. Mikor szeretné elkezdeni a munkát?' },
+  { r:'user',  t:'Lehetőleg október vége előtt — utána fűtési szezon és kellemetlenebb' },
+  { r:'agent', t:'Mi az irányítószáma?' },
+  { r:'user',  t:'2120' },
+  { r:'agent', t:'Milyen kerettel számol a teljes munkára?' },
+  { r:'user',  t:'2,2 és 2,8 millió forint között' },
+  { r:'agent', t:'A neve?' },
+  { r:'user',  t:'Molnár Zsolt' },
+  { r:'agent', t:'Milyen telefonon tudjuk elérni, Zsolt?' },
+  { r:'user',  t:'06 70 884 2317' },
+  { r:'agent', t:'Az e-mail-címe?' },
+  { r:'user',  t:'molnar.zsolt@citromail.hu' },
+  { r:'agent', t:'Köszönöm Zsolt — összeállítom a részletes burkolási ajánlatot.' },
+  { r:'estimate' }
+]
+
+// ── Estimate data ─────────────────────────────────────────────────────────────
+const EST = {
+  lower: 2_190_000, mid: 2_658_000, upper: 3_185_000,
+  status: 'PRIORITÁS',
+  items: [
+    { label:'Prémium 60×120 olasz porcelánlap (fürdőszoba fal)', note:'35 m², beton-szürke megjelenés, Aparici / Marazzi',    amt: 385_000 },
+    { label:'Természetes kő hatású padlólap 60×60',              note:'32 m² — fürdő + konyha + előszoba + WC padló',         amt: 195_000 },
+    { label:'Mozaik dekorcsík + szegőelemek',                    note:'zuhanytálca mellé, WC dekor, Schlüter élvédő profil',   amt: 125_000 },
+    { label:'Mapei XL-lapragasztó + normál csempéragasztó',      note:'60×120 lapokhoz flexibilis kötőanyag, padlófűtés-kompatibilis', amt: 115_000 },
+    { label:'Fugázóanyag, szilikon, átmeneti profilok',          note:'prémium szürke fugázó, sarokszilikon, küszöbélek',     amt:  88_000 },
+    { label:'Kétrétegű vízszigetelés (Mapelastic, 14 m²)',       note:'zuhanyzó + kád körnézet, kétrétegű kenőszigeteléssel', amt: 165_000 },
+    { label:'Régi burkolat bontása + konténeres szállítás',      note:'teljes elbontás, konténer kiszállás, törmelékszállítás', amt: 215_000 },
+    { label:'Aljzatkiegyenlítés + aljzatalapozás',               note:'ömlesztett kiegyenlítő, nedves helyiség primer bevonat', amt: 110_000 },
+    { label:'Padlófűtés-kompatibilis kivitelezési pótdíj',       note:'fűtőszőnyeg felett fokozott ragasztóréteg, 32 m² padló', amt:  95_000 },
+    { label:'Burkolás — munkadíj (≈105 m² fal + padló)',        note:'3 fős csapat, 11 munkanap, körbefugázással, szilikon',  amt: 945_000 },
+    { label:'Projekt menedzsment (6%)',                           note:'koordináció, anyagszállítás, műszaki felügyelet',       amt: 146_580 },
+    { label:'Tartalék (3%)',                                      note:'3% előre nem látható munkákra',                         amt:  73_290 },
+  ],
+  customer: {
+    'Név':'Molnár Zsolt',
+    'Telefon':'06 70 884 2317',
+    'E-mail':'molnar.zsolt@citromail.hu',
+    'Irányítószám':'2120 — Dunakeszi',
+    'Munka típusa':'Hidegburkolás — fürdő + WC + konyha + előszoba (≈105 m²)',
+    'Saját keret':'2 200 000 – 2 800 000 Ft',
+  },
+  extras: [
+    { icon:'🪨', label:'Fürdőszoba fal',  val:'60×120 porcelán, beton-szürke' },
+    { icon:'🟫', label:'Padló',           val:'60×60, antracit + kő hatású' },
+    { icon:'🌡️', label:'Padlófűtés',     val:'Elektromos, kompatibilis kivitel' },
+    { icon:'💧', label:'Vízszigetelés',   val:'Kétréteg — zuhanyzó + kád' },
+  ],
+  timing: 'Október vége előtt',
+  score: 91, scoreLabel: 'Minősített Érdeklődő', scoreColor: '#111827',
+  clientCity: 'Dunakeszi', clientZip: '2120',
+  companyCity: 'Budapest', distanceKm: 25,
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function huf(n) { return n.toLocaleString('hu-HU') + ' Ft' }
+function esc(s) {
+  if (!s && s !== 0) return ''
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let isOpen    = false
+let showModal = false
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  const existing = document.getElementById('ownerModal')
+  if (existing) existing.remove()
+  if (showModal) {
+    const m = buildModal(); m.id = 'ownerModal'; document.body.appendChild(m)
+  }
+  const root = document.getElementById('widget-root')
+  root.innerHTML = ''
+  if (isOpen) root.appendChild(buildPanel())
+  if (!isOpen) {
+    const tip = document.createElement('div')
+    tip.className = 'tooltip'; tip.textContent = 'Azonnali árat kap?'
+    root.appendChild(tip)
+  }
+  root.appendChild(buildBubble())
+}
+
+function buildBubble() {
+  const btn = document.createElement('button')
+  btn.className = 'bubble-btn ' + (isOpen ? 'bubble-open' : 'bubble-closed')
+  btn.innerHTML = isOpen
+    ? `<svg viewBox="0 0 14 14" fill="none" style="width:16px;height:16px"><path d="M1 1l12 12M13 1L1 13" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>`
+    : `<svg viewBox="0 0 24 24" fill="none" style="width:28px;height:28px"><path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" fill="white"/></svg>`
+  btn.onclick = () => { isOpen = !isOpen; render(); if (isOpen) setTimeout(scrollBottom, 60) }
+  return btn
+}
+
+function buildPanel() {
+  const panel = document.createElement('div')
+  panel.className = 'chat-panel'
+
+  // Header
+  const hdr = document.createElement('header')
+  hdr.className = 'chat-header'
+  hdr.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:42px;height:42px;border-radius:50%;background:#fff;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center">
+        <img src="https://graph.facebook.com/csempeszabo/picture?type=normal"
+             style="width:100%;height:100%;object-fit:cover"
+             onerror="this.parentElement.innerHTML='<span style=&quot;font-size:13px;font-weight:900;color:#ea580c&quot;>CS</span>'"
+             alt="logo">
+      </div>
+      <div>
+        <div style="color:#fff;font-weight:700;font-size:14px;letter-spacing:-0.3px;line-height:1.2">Csempe Szabó</div>
+        <div style="display:flex;align-items:center;gap:5px;margin-top:3px">
+          <div style="width:6px;height:6px;border-radius:50%;background:#34d399;box-shadow:0 0 0 2px rgba(52,211,153,0.3)"></div>
+          <span style="color:#d1d5db;font-size:11px;font-weight:500">Online · Másodpercek alatt válaszol</span>
+        </div>
+      </div>
+    </div>
+    <button class="close-btn" id="closeBtn">
+      <svg viewBox="0 0 14 14" fill="none" style="width:12px;height:12px">
+        <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>`
+  hdr.querySelector('#closeBtn').onclick = () => { isOpen = false; render() }
+  panel.appendChild(hdr)
+
+  // Messages
+  const msgs = document.createElement('div')
+  msgs.className = 'msgs-scroll'; msgs.id = 'msgsScroll'
+  MSGS.forEach((msg, i) => {
+    if (msg.r === 'agent') {
+      const showAvatar = i === 0 || MSGS[i-1].r === 'user'
+      const wrap = document.createElement('div')
+      wrap.className = 'msg-agent'
+      wrap.innerHTML = `
+        <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#374151,#111827);flex-shrink:0;display:flex;align-items:center;justify-content:center;visibility:${showAvatar?'visible':'hidden'}">
+          <svg viewBox="0 0 14 14" fill="none" style="width:12px;height:12px">
+            <path d="M7 1C4.24 1 2 3.24 2 6c0 1.73.89 3.25 2.23 4.15L3.5 13 7 11.5l3.5 1.5-.73-2.85A5 5 0 0 0 12 6c0-2.76-2.24-5-5-5Z" fill="white"/>
+          </svg>
+        </div>
+        <div class="msg-agent-bubble">${esc(msg.t)}</div>`
+      msgs.appendChild(wrap)
+    } else if (msg.r === 'user') {
+      const wrap = document.createElement('div')
+      wrap.className = 'msg-user'
+      wrap.innerHTML = `<div class="msg-user-bubble">${esc(msg.t)}</div>`
+      msgs.appendChild(wrap)
+    } else if (msg.r === 'estimate') {
+      msgs.appendChild(buildCostMessage())
+    }
+  })
+  panel.appendChild(msgs)
+
+  // Quick replies
+  const qr = document.createElement('div'); qr.className = 'qr-area'
+  ;['Fürdőszoba','Csempézés','Padlóburkolás','Mozaik'].forEach(t => {
+    const b = document.createElement('button'); b.className = 'qr-btn'; b.textContent = t
+    qr.appendChild(b)
+  })
+  panel.appendChild(qr)
+
+  // Input
+  const inp = document.createElement('div'); inp.className = 'input-area'
+  inp.innerHTML = `
+    <div class="input-row">
+      <input class="input-field" type="text" placeholder="Írjon üzenetet..." disabled>
+      <button class="send-btn" disabled>
+        <svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;transform:translateX(1px)">
+          <path d="M3 10L17 3l-4 7 4 7L3 10Z" fill="white"/>
+        </svg>
+      </button>
+    </div>`
+  panel.appendChild(inp)
+  panel.appendChild(buildSendBar())
+  return panel
+}
+
+function scrollBottom() {
+  const el = document.getElementById('msgsScroll'); if (el) el.scrollTop = el.scrollHeight
+}
+
+// ── Cost breakdown in chat ────────────────────────────────────────────────────
+function buildCostMessage() {
+  const wrap = document.createElement('div')
+  wrap.className = 'msg-agent'; wrap.style.cssText = 'align-items:flex-start;'
+
+  const avatar = document.createElement('div')
+  avatar.style.cssText = 'width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#374151,#111827);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:2px;'
+  avatar.innerHTML = `<svg viewBox="0 0 14 14" fill="none" style="width:12px;height:12px"><path d="M7 1C4.24 1 2 3.24 2 6c0 1.73.89 3.25 2.23 4.15L3.5 13 7 11.5l3.5 1.5-.73-2.85A5 5 0 0 0 12 6c0-2.76-2.24-5-5-5Z" fill="white"/></svg>`
+
+  const bubble = document.createElement('div')
+  bubble.className = 'msg-agent-bubble'; bubble.style.cssText = 'max-width:92%;padding:12px 14px;'
+  bubble.innerHTML = `
+    <div style="font-size:12.5px;color:#374151;font-weight:600;margin-bottom:10px">Összeállítottam az ajánlatot Zsolt. Így jött ki a szám:</div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Lapanyag (60×120 + 60×60)</span><span style="font-weight:700;color:#111827">580 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Dekorcsík, mozaik, szegők</span><span style="font-weight:700;color:#111827">125 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Ragasztó, fugázó, vízszigetelés</span><span style="font-weight:700;color:#111827">368 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Bontás + aljzatkiegyenlítés</span><span style="font-weight:700;color:#111827">325 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Burkolás munkadíj + padlófűtés</span><span style="font-weight:700;color:#111827">1 040 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;"><span>PM + tartalék</span><span style="font-weight:700;color:#111827">219 870 Ft</span></div>
+    </div>
+    <div style="background:linear-gradient(135deg,#f9f6f3,#f3ede5);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:#92400e;font-weight:700;margin-bottom:2px">Becsült összeg</div>
+        <div style="font-size:24px;font-weight:900;color:#111827;letter-spacing:-1px;line-height:1">${huf(EST.mid)}</div>
+        <div style="font-size:10px;color:#6b7280;margin-top:2px">${huf(EST.lower)} – ${huf(EST.upper)} sáv</div>
+      </div>
+      <div style="background:rgba(234,88,12,0.1);border:1px solid rgba(234,88,12,0.3);border-radius:8px;padding:4px 10px;">
+        <div style="font-size:9px;color:#c2410c;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Határidő</div>
+        <div style="font-size:11px;color:#c2410c;font-weight:600">Okt. vége</div>
+      </div>
+    </div>`
+
+  wrap.appendChild(avatar); wrap.appendChild(bubble)
+  return wrap
+}
+
+// ── Send bar ──────────────────────────────────────────────────────────────────
+function buildSendBar() {
+  const bar = document.createElement('div')
+  bar.style.cssText = 'background:#fff;border-top:1.5px solid #fed7aa;flex-shrink:0;padding:10px 14px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;'
+
+  const left = document.createElement('div')
+  left.innerHTML = `
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:#6b7280;font-weight:700;margin-bottom:1px">Becsült ajánlat</div>
+    <div style="font-size:20px;font-weight:900;color:#111827;letter-spacing:-1px;line-height:1">${huf(EST.mid)}</div>`
+
+  const btn = document.createElement('button')
+  btn.textContent = 'Elküldés a tulajdonosnak →'
+  btn.style.cssText = 'background:linear-gradient(135deg,#ea580c,#c2410c);color:#fff;border:none;border-radius:10px;padding:10px 15px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;box-shadow:0 3px 10px rgba(234,88,12,0.4);flex-shrink:0;'
+  btn.onclick = function() { showModal = true; render() }
+
+  bar.appendChild(left); bar.appendChild(btn)
+  return bar
+}
+
+// ── Owner notification modal ──────────────────────────────────────────────────
+function buildModal() {
+  const overlay = document.createElement('div')
+  overlay.className = 'modal-overlay'
+  overlay.onclick = e => { if (e.target === overlay) { showModal = false; render() } }
+
+  const now = new Date().toLocaleTimeString('hu-HU', { hour:'2-digit', minute:'2-digit' })
+
+  const card = document.createElement('div')
+  card.className = 'modal-card'
+  card.innerHTML = `
+    <!-- Modal header -->
+    <div style="background:linear-gradient(135deg,#111827,#1f2937,#374151);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-radius:22px 22px 0 0">
+      <div>
+        <div style="font-size:10px;color:#d1d5db;text-transform:uppercase;letter-spacing:.14em;font-weight:600;margin-bottom:3px">Tulajdonosi értesítés</div>
+        <div style="color:#fff;font-weight:800;font-size:15px;letter-spacing:-0.3px">Így kapja meg a Csempe Szabó</div>
+      </div>
+      <button id="modalClose" style="background:rgba(255,255,255,0.12);border:none;color:#fff;width:34px;height:34px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;line-height:1">✕</button>
+    </div>
+
+    <!-- Notification mockup -->
+    <div style="padding:18px 18px 6px">
+      <div style="background:#f9f8f7;border:1.5px solid #e5e7eb;border-radius:16px;overflow:hidden">
+
+        <!-- Bar -->
+        <div style="background:linear-gradient(90deg,#1f2937,#111827);padding:9px 16px;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:8px;height:8px;border-radius:50%;background:#34d399;box-shadow:0 0 0 3px rgba(52,211,153,0.3)"></div>
+            <span style="color:#fff;font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.1em">Új Érdeklődő</span>
+          </div>
+          <span style="color:#9ca3af;font-size:11px;font-weight:500">${now}</span>
+        </div>
+
+        <!-- Lead info -->
+        <div style="padding:16px 16px 12px;border-bottom:1px solid #e5e7eb">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#f3ede5,#fed7aa);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:900;color:#c2410c">M</div>
+            <div style="flex:1">
+              <div style="font-size:16px;font-weight:800;color:#111827;letter-spacing:-0.3px">Molnár Zsolt</div>
+              <div style="font-size:12.5px;color:#6b7280;margin-top:2px">molnar.zsolt@citromail.hu</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+                <span style="font-size:12px;font-weight:700;color:#c2410c;background:#fff7ed;padding:3px 10px;border-radius:20px">📞 06 70 884 2317</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div style="padding:12px 16px;border-bottom:1px solid #e5e7eb;background:#fff">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:32px;height:32px;border-radius:8px;background:#f9f8f7;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">📍</div>
+              <div>
+                <div style="font-size:9.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600">Érdeklődő helyzete</div>
+                <div style="font-size:13.5px;font-weight:700;color:#111827">Dunakeszi · 2120</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:9.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600">Önöktől</div>
+              <div style="font-size:20px;font-weight:900;color:#111827;letter-spacing:-1px;line-height:1">~25 km</div>
+              <div style="font-size:10px;color:#9ca3af">Budapest → Dunakeszi</div>
+            </div>
+          </div>
+          <div style="margin-top:10px;height:5px;background:#e5e7eb;border-radius:3px;overflow:hidden">
+            <div style="width:25%;height:100%;background:linear-gradient(90deg,#fbbf24,#ea580c);border-radius:3px"></div>
+          </div>
+        </div>
+
+        <!-- Estimate + budget -->
+        <div style="padding:14px 16px;border-bottom:1px solid #e5e7eb">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div>
+              <div style="font-size:9.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:3px">Kalkulált ajánlat</div>
+              <div style="font-size:30px;font-weight:900;color:#111827;letter-spacing:-1.5px;line-height:1">${huf(EST.mid)}</div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:3px">${huf(EST.lower)} – ${huf(EST.upper)}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:9.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:3px">Vevő kerete</div>
+              <div style="font-size:14px;font-weight:700;color:#111827">2 200 000 –</div>
+              <div style="font-size:14px;font-weight:700;color:#111827">2 800 000 Ft</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:8px 12px">
+            <div style="width:20px;height:20px;border-radius:50%;background:#16a34a;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg viewBox="0 0 12 12" fill="none" style="width:10px;height:10px">
+                <path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span style="font-size:12.5px;font-weight:700;color:#15803d">Az ajánlat középértéke a vevő keretébe esik</span>
+          </div>
+        </div>
+
+        <!-- Job details -->
+        <div style="padding:12px 16px;border-bottom:1px solid #e5e7eb;background:#fff">
+          <div style="font-size:9.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px">Munka részletei</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <span style="font-size:12px;font-weight:600;color:#c2410c;background:#fff7ed;padding:4px 12px;border-radius:20px">60×120 porcelánlap — fürdőszoba fal</span>
+            <span style="font-size:12px;font-weight:600;color:#c2410c;background:#fff7ed;padding:4px 12px;border-radius:20px">60×60 — padló (konyha, előszoba, WC)</span>
+            <span style="font-size:12px;font-weight:600;color:#c2410c;background:#fff7ed;padding:4px 12px;border-radius:20px">Elektromos padlófűtés alá</span>
+            <span style="font-size:12px;font-weight:600;color:#c2410c;background:#fff7ed;padding:4px 12px;border-radius:20px">Kétrétegű vízszigetelés</span>
+            <span style="font-size:12px;font-weight:600;color:#c2410c;background:#fff7ed;padding:4px 12px;border-radius:20px">Mozaik dekorcsík + szegők</span>
+            <span style="font-size:12px;font-weight:600;color:#374151;background:#f3f4f6;border:1px solid #e5e7eb;padding:4px 12px;border-radius:20px">⏰ Október vége előtt</span>
+          </div>
+        </div>
+
+        <!-- Extras grid -->
+        <div style="padding:12px 16px;border-bottom:1px solid #e5e7eb">
+          <div style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px">Felismert igények</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            ${EST.extras.map(e => `
+              <div style="background:#fff7ed;border-radius:10px;padding:7px 10px;display:flex;align-items:center;gap:6px">
+                <span style="font-size:13px">${e.icon}</span>
+                <div>
+                  <div style="font-size:9.5px;color:#92400e;font-weight:600">${esc(e.label)}</div>
+                  <div style="font-size:11px;color:#c2410c;font-weight:600">${esc(e.val)}</div>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- Tételes bontás -->
+        <div style="padding:12px 16px;border-bottom:1px solid #e5e7eb;background:#fff">
+          <div style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px">Tételes bontás</div>
+          ${EST.items.map((item,i) => `
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;${i<EST.items.length-1?'border-bottom:1px solid #f3f4f6':''}">
+              <div style="flex:1;margin-right:10px">
+                <div style="font-size:11.5px;color:#111827;font-weight:500">${esc(item.label)}</div>
+                <div style="font-size:10px;color:#9ca3af;margin-top:1px">${esc(item.note)}</div>
+              </div>
+              <div style="font-size:12px;font-weight:700;color:#111827;flex-shrink:0">${huf(item.amt)}</div>
+            </div>`).join('')}
+        </div>
+
+        <!-- Lead score -->
+        <div style="padding:12px 16px;background:#f9f8f7">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:.12em;font-weight:600">Érdeklődő pontszám</span>
+            <div style="display:flex;align-items:center;gap:7px">
+              <span style="font-size:22px;font-weight:900;color:#111827;letter-spacing:-0.5px">91<span style="font-size:12px;font-weight:600;color:#9ca3af">/100</span></span>
+              <span style="font-size:10.5px;font-weight:700;color:#fff;background:#374151;padding:3px 10px;border-radius:20px">Minősített Érdeklődő</span>
+            </div>
+          </div>
+          <div style="height:6px;border-radius:3px;background:#e5e7eb;overflow:hidden">
+            <div style="height:100%;width:91%;background:linear-gradient(90deg,#fbbf24,#ea580c);border-radius:3px"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Timing -->
+    <div style="padding:10px 18px 0">
+      <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px">📅</span>
+        <div>
+          <div style="font-size:9.5px;color:#c2410c;text-transform:uppercase;letter-spacing:.1em;font-weight:600">Tervezett kezdés</div>
+          <div style="font-size:13px;font-weight:700;color:#c2410c">${esc(EST.timing)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="padding:14px 18px 20px;text-align:center">
+      <div style="display:flex;align-items:center;justify-content:center;gap:7px;background:#f9f8f7;border:1px solid #e5e7eb;border-radius:12px;padding:10px 16px">
+        <span style="font-size:14px">✉️</span>
+        <span style="font-size:12px;color:#374151;font-weight:600">Az érdeklődő automatikus visszaigazolást kapott emailben</span>
+      </div>
+    </div>`
+
+  card.querySelector('#modalClose').onclick = () => { showModal = false; render() }
+  overlay.appendChild(card)
+  return overlay
+}
+
+render()
+</script>
+</body>
+</html>
