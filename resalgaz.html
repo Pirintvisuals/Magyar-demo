@@ -232,61 +232,87 @@
 <script>
 const MSGS = [
   { r:'agent', t:'Szia! Milyen gázkészülékkel van probléma — kazán, konvektor, gáztűzhely, vagy bojler?' },
-  { r:'user',  t:'Gázkazán — Vaillant' },
-  { r:'agent', t:'Értem. Mi pontosan a tünet — hibajelzés van a kijelzőn, vagy nem fűt, esetleg hangos?' },
-  { r:'user',  t:'F75-ös hibakód jelenik meg és nem fűt' },
-  { r:'agent', t:'Az F75 általában nyomásérzékelő vagy víznyomás-probléma. Melyik Vaillant modell ez?' },
-  { r:'user',  t:'ecoTEC Plus 28' },
-  { r:'agent', t:'Rendben. Hány éves a készülék nagyjából?' },
-  { r:'user',  t:'8 éves' },
-  { r:'agent', t:'Mikor volt utoljára szerviztelve?' },
-  { r:'user',  t:'Kb. 3 éve' },
-  { r:'agent', t:'A fűtési rendszer radiátoros, padlófűtéses, vagy vegyes?' },
-  { r:'user',  t:'Radiátoros, 4 szoba + fürdő' },
-  { r:'agent', t:'A meleg vizes ellátás is ebből a kazánból megy?' },
-  { r:'user',  t:'Igen, kombinált kazán' },
-  { r:'agent', t:'Mennyire sürgős — ma vagy holnap kell valaki, vagy rugalmas az időpont?' },
-  { r:'user',  t:'Minél hamarabb, nagyon hideg van' },
-  { r:'agent', t:'Értjük, sürgős eset. Mi az irányítószáma?' },
-  { r:'user',  t:'2030' },
+  { r:'user',  t:'Gázkazán — Vaillant ecoTEC Plus' },
+  { r:'agent', t:'Értem. Mi pontosan a tünet — hibakód jelenik meg a kijelzőn, nem fűt, hangos, vagy más?' },
+  { r:'user',  t:'F75-ös hibakód van és teljesen leállt — nem fűt és meleg víz sincs' },
+  { r:'agent', t:'Az F75 nyomásérzékelő vagy víznyomás-problémát jelez. Melyik pontos típusszám? (pl. VUI 24, 28, 35 — a kW érték a típustáblán)' },
+  { r:'user',  t:'ecoTEC Plus VUI 35 — tehát 35 kW-os' },
+  { r:'agent', t:'Hány éves a készülék, és mikor volt az utolsó szerviz?' },
+  { r:'user',  t:'9 éves, utoljára 4 éve volt szerviz' },
+  { r:'agent', t:'Ez már hosszabb ideje van szerviz nélkül — komplex állapotvizsgálatot is javaslok. A fűtési rendszer mekkora területet lát el?' },
+  { r:'user',  t:'Nagy családi ház, kb. 220 m², pince is van' },
+  { r:'agent', t:'Hány radiátor van összesen a rendszeren?' },
+  { r:'user',  t:'12 radiátor, kettő a pincében is' },
+  { r:'agent', t:'Hány fűtési zónára van osztva a rendszer? Van külön zónaszelep a pincéhez vagy az emelethez?' },
+  { r:'user',  t:'Két zóna — földszint és emelet együtt, a pince külön termosztáton' },
+  { r:'agent', t:'A kazán kombinált (fűtés + meleg víz egyben), vagy van külön tárolós bojler is?' },
+  { r:'user',  t:'Kombinált, az is le van állva — nincs meleg víz sem' },
+  { r:'agent', t:'Volt-e már korábban is meghibásodás — más hibakód, keringtetési zaj, vagy szivárgás?' },
+  { r:'user',  t:'Tavaly volt egyszer hangos ketyegés, de magától elmúlt' },
+  { r:'agent', t:'Ez keringtetési zaj volt — a szivattyút is megvizsgálom. Mit mutat most a nyomásmérő a kazánon?' },
+  { r:'user',  t:'0 bar — teljesen nyomástalan lett' },
+  { r:'agent', t:'Ez magyarázza az F75-öt. Volt esetleg ázás vagy vizes folt a kazán alatt?' },
+  { r:'user',  t:'Nem láttunk vizet, de nem néztük meg alaposan' },
+  { r:'agent', t:'Van-e CO-riasztó telepítve a kazán vagy a kazánhelyiség közelében?' },
+  { r:'user',  t:'Nincs' },
+  { r:'agent', t:'CO-mérést is elvégzünk — ezt kalkulálom. Milyen kémény van a rendszeren — koncentrikus kétrétegű cső vagy hagyományos falazott kémény?' },
+  { r:'user',  t:'Koncentrikus, a falon megy ki a kazán mögött' },
+  { r:'agent', t:'A radiátorokból légtelenítéskor volt-e barna, iszapos víz az utóbbi időben?' },
+  { r:'user',  t:'Igen, tavaly télen kicsit barna volt a vize' },
+  { r:'agent', t:'Ez iszapképződésre utal — hőcserélő kémiai tisztítás erősen javasolt. Van-e gázszivárgás-érzékelő az épületben?' },
+  { r:'user',  t:'Nincs' },
+  { r:'agent', t:'Gázszivárgás-ellenőrzést is beleveszem — kötelező eleme a teljes szerviznek. Mennyire sürgős? Van-e most fűtés a házban egyáltalán?' },
+  { r:'user',  t:'Sürgős — 3 napos hideg és a házban 12°C, 2 gyerek van otthon' },
+  { r:'agent', t:'Értjük — azonnali prioritásra vesszük fel. Mi az irányítószáma?' },
+  { r:'user',  t:'2040' },
+  { r:'agent', t:'Milyen kerettel számol a teljes szervizre és javításra?' },
+  { r:'user',  t:'500 és 700 ezer forint között' },
   { r:'agent', t:'A neve?' },
-  { r:'user',  t:'Kovács Péter' },
-  { r:'agent', t:'Milyen telefonon tudjuk elérni, Péter?' },
-  { r:'user',  t:'06 30 123 4567' },
-  { r:'agent', t:'Az e-mail-címe?' },
-  { r:'user',  t:'kovacs.peter@gmail.com' },
-  { r:'agent', t:'Köszönöm Péter — összeállítom a becslést.' },
+  { r:'user',  t:'Nagy Gábor' },
+  { r:'agent', t:'Telefonszáma, Gábor?' },
+  { r:'user',  t:'06 20 567 8901' },
+  { r:'agent', t:'E-mail-cím?' },
+  { r:'user',  t:'nagy.gabor@freemail.hu' },
+  { r:'agent', t:'Köszönöm Gábor — összeállítom a Vaillant ecoTEC Plus teljes szerviz és javítási ajánlatot.' },
   { r:'estimate' }
 ]
 
 const EST = {
-  lower: 42_000, mid: 58_000, upper: 88_000,
+  lower: 492_000, mid: 603_000, upper: 726_000,
   status: 'SÜRGŐS',
   items: [
-    { label:'Kiszállás + diagnosztika',         note:'helyszíni felmérés, F75 hibakód kiértékelés',        amt: 15_000 },
-    { label:'Nyomásérzékelő csere',             note:'Vaillant ecoTEC Plus eredeti alkatrész + beépítés', amt: 22_000 },
-    { label:'Tágulási tartály ellenőrzés',      note:'nyomás-utántöltés, előnyomás beállítás',             amt:  8_000 },
-    { label:'Rendszer feltöltés + beállítás',   note:'víznyomás normalizálás, próbaüzem',                  amt:  9_000 },
-    { label:'PM + tartalék (6%)',               note:'6% általános + tartalék',                            amt:  4_000 },
+    { label:'Kiszállás + komplex kazándiagnosztika',           note:'F75 hibakód kiértékelés, teljes rendszerállapot-felmérés',  amt: 28_000 },
+    { label:'Nyomásérzékelő csere (Vaillant ecoTEC eredeti)', note:'F75 javítás, gyári alkatrész, kalibrálás, próbaüzem',       amt: 32_000 },
+    { label:'Tágulási tartály csere (18L, Vaillant)',          note:'9 éves tartály cseréje, előnyomás-beállítás, feltöltés',   amt: 65_000 },
+    { label:'Elsődleges hőcserélő kémiai tisztítás',          note:'iszap- és kőzetlerakódás eltávolítás, átmosás, öblítés',   amt: 45_000 },
+    { label:'Keringető szivattyú csere (Grundfos UPS 25-60)', note:'keringtetési zaj megszüntetése, új szivattyú beépítés',    amt: 75_000 },
+    { label:'Gázégő + gázszelep ellenőrzés, tömítéscsere',   note:'gázszivárgás-vizsgálat, égő tisztítás, tömítések cseréje', amt: 48_000 },
+    { label:'Füstgázelemzés + CO-mérés + égési beállítás',   note:'CO-szint mérés, hatásfok optimalizálás, mérőjegyzőkönyv',  amt: 35_000 },
+    { label:'12 radiátor légtelenítés + rendszer feltöltés',  note:'kétzónás rendszer, 0 bar-ról normál üzemi nyomásra',       amt: 48_000 },
+    { label:'Koncentrikus kémény tömítés-ellenőrzés',         note:'csatlakozási pontok vizsgálata, szükség esetén tömítés',   amt: 32_000 },
+    { label:'12 hónapos prémium karbantartási szerződés',     note:'éves szervizlátogatás, elsőbbségi kiszállás, alkatrész',   amt: 145_000 },
+    { label:'Projekt menedzsment (6%)',                        note:'koordináció, alkatrész-logisztika, szerviz dokumentáció',  amt: 33_180 },
+    { label:'Tartalék (3%)',                                   note:'3% előre nem látható munkákra és alkatrész-eltérésre',     amt: 16_590 },
   ],
   customer: {
-    'Név':'Kovács Péter',
-    'Telefon':'06 30 123 4567',
-    'E-mail':'kovacs.peter@gmail.com',
-    'Irányítószám':'2030 — Érd',
-    'Készülék':'Vaillant ecoTEC Plus 28',
-    'Probléma':'F75 hibakód — nem fűt',
+    'Név':'Nagy Gábor',
+    'Telefon':'06 20 567 8901',
+    'E-mail':'nagy.gabor@freemail.hu',
+    'Irányítószám':'2040 — Budaörs',
+    'Készülék':'Vaillant ecoTEC Plus VUI 35',
+    'Probléma':'F75 hibakód — 0 bar, nem fűt, nincs meleg víz',
+    'Saját keret':'500 000 – 700 000 Ft',
   },
   extras: [
-    { icon:'🔥', label:'Kazán típus', val:'Vaillant ecoTEC Plus 28' },
-    { icon:'⚠️', label:'Hibakód', val:'F75 — nyomásérzékelő' },
-    { icon:'🚿', label:'Rendszer', val:'Kombinált — fűtés + meleg víz' },
-    { icon:'📅', label:'Utolsó szerviz', val:'~3 évvel ezelőtt' },
+    { icon:'🔥', label:'Kazán típus',     val:'Vaillant ecoTEC Plus VUI 35' },
+    { icon:'⚠️', label:'Hibakód',         val:'F75 — 0 bar, nyomásveszteség' },
+    { icon:'🏠', label:'Ingatlan',        val:'220 m² · 12 radiátor · 2 zóna' },
+    { icon:'📅', label:'Utolsó szerviz',  val:'4 évvel ezelőtt —9 éves kazán' },
   ],
-  timing: 'Sürgős — mielőbb',
-  score: 92, scoreLabel: 'Prémium Érdeklődő', scoreColor: '#dc2626',
-  clientCity: 'Érd', clientZip: '2030',
-  companyCity: 'Budapest', distanceKm: 18,
+  timing: 'Sürgős — 12°C a házban, 2 gyerek',
+  score: 95, scoreLabel: 'Prémium Érdeklődő', scoreColor: '#dc2626',
+  clientCity: 'Budaörs', clientZip: '2040',
+  companyCity: 'Budapest', distanceKm: 15,
 }
 
 function huf(n) { return n.toLocaleString('hu-HU') + ' Ft' }
@@ -433,13 +459,14 @@ function buildCostMessage() {
   bubble.className = 'msg-agent-bubble'
   bubble.style.cssText = 'max-width:92%;padding:12px 14px;'
   bubble.innerHTML = `
-    <div style="font-size:12.5px;color:#374151;font-weight:600;margin-bottom:10px">Összeállítottam a becslést, Péter. Így jött ki a szám:</div>
+    <div style="font-size:12.5px;color:#374151;font-weight:600;margin-bottom:10px">Összeállítottam a becslést, Gábor. Vaillant ecoTEC Plus VUI 35 — így jött ki:</div>
     <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px;">
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Kiszállás + diagnosztika</span><span style="font-weight:700;color:#dc2626">15 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Nyomásérzékelő csere (Vaillant)</span><span style="font-weight:700;color:#dc2626">22 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Tágulási tartály ellenőrzés</span><span style="font-weight:700;color:#dc2626">8 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Rendszer feltöltés + beállítás</span><span style="font-weight:700;color:#dc2626">9 000 Ft</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;"><span>PM + tartalék</span><span style="font-weight:700;color:#dc2626">4 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Diagnosztika + nyomásérzékelő csere</span><span style="font-weight:700;color:#dc2626">60 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Tágulási tartály csere + hőcserélő tisztítás</span><span style="font-weight:700;color:#dc2626">110 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>Szivattyú csere + gázégő + tömítések</span><span style="font-weight:700;color:#dc2626">123 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>CO-mérés + légtelenítés + kémény</span><span style="font-weight:700;color:#dc2626">115 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6"><span>12 hónapos prémium karbantartás</span><span style="font-weight:700;color:#dc2626">145 000 Ft</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#374151;padding:4px 0;"><span>PM + tartalék</span><span style="font-weight:700;color:#dc2626">49 770 Ft</span></div>
     </div>
     <div style="background:linear-gradient(135deg,#fff1f2,#fee2e2);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
       <div>
@@ -508,12 +535,12 @@ function buildModal() {
 
         <div style="padding:16px 16px 12px;border-bottom:1px solid #e5e7eb">
           <div style="display:flex;align-items:flex-start;gap:12px">
-            <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#fee2e2,#fecaca);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:900;color:#dc2626">K</div>
+            <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#fee2e2,#fecaca);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:900;color:#dc2626">N</div>
             <div style="flex:1">
-              <div style="font-size:16px;font-weight:800;color:#111827;letter-spacing:-0.3px">Kovács Péter</div>
-              <div style="font-size:12.5px;color:#6b7280;margin-top:2px">kovacs.peter@gmail.com</div>
+              <div style="font-size:16px;font-weight:800;color:#111827;letter-spacing:-0.3px">Nagy Gábor</div>
+              <div style="font-size:12.5px;color:#6b7280;margin-top:2px">nagy.gabor@freemail.hu</div>
               <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
-                <span style="font-size:12px;font-weight:700;color:#dc2626;background:#fff1f2;padding:3px 10px;border-radius:20px">📞 06 30 123 4567</span>
+                <span style="font-size:12px;font-weight:700;color:#dc2626;background:#fff1f2;padding:3px 10px;border-radius:20px">📞 06 20 567 8901</span>
               </div>
             </div>
           </div>
@@ -525,17 +552,17 @@ function buildModal() {
               <div style="width:32px;height:32px;border-radius:8px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">📍</div>
               <div>
                 <div style="font-size:9.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600">Érdeklődő helyzete</div>
-                <div style="font-size:13.5px;font-weight:700;color:#111827">Érd · 2030</div>
+                <div style="font-size:13.5px;font-weight:700;color:#111827">Budaörs · 2040</div>
               </div>
             </div>
             <div style="text-align:right">
               <div style="font-size:9.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600">Önöktől</div>
-              <div style="font-size:20px;font-weight:900;color:#dc2626;letter-spacing:-1px;line-height:1">~18 km</div>
-              <div style="font-size:10px;color:#9ca3af">Budapesttől</div>
+              <div style="font-size:20px;font-weight:900;color:#dc2626;letter-spacing:-1px;line-height:1">~15 km</div>
+              <div style="font-size:10px;color:#9ca3af">Budapest agglomeráció</div>
             </div>
           </div>
           <div style="margin-top:10px;height:5px;background:#e5e7eb;border-radius:3px;overflow:hidden">
-            <div style="width:18%;height:100%;background:linear-gradient(90deg,#fca5a5,#dc2626);border-radius:3px"></div>
+            <div style="width:15%;height:100%;background:linear-gradient(90deg,#fca5a5,#dc2626);border-radius:3px"></div>
           </div>
         </div>
 
@@ -547,8 +574,9 @@ function buildModal() {
               <div style="font-size:11px;color:#9ca3af;margin-top:3px">${huf(EST.lower)} – ${huf(EST.upper)}</div>
             </div>
             <div style="text-align:right">
-              <div style="font-size:9.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:3px">Sürgősség</div>
-              <div style="font-size:13px;font-weight:700;color:#dc2626;background:#fff1f2;padding:4px 12px;border-radius:20px">🔥 Azonnali</div>
+              <div style="font-size:9.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:3px">Vevő kerete</div>
+              <div style="font-size:14px;font-weight:700;color:#111827">500 000 –</div>
+              <div style="font-size:14px;font-weight:700;color:#111827">700 000 Ft</div>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:8px 12px">
@@ -557,35 +585,72 @@ function buildModal() {
                 <path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <span style="font-size:12.5px;font-weight:700;color:#15803d">Sürgős eset — fűtés nélkül, azonnali kiszállást igényel</span>
+            <span style="font-size:12.5px;font-weight:700;color:#15803d">Keret egyezik — az ajánlat a vevő keretébe esik</span>
           </div>
         </div>
 
         <div style="padding:12px 16px;border-bottom:1px solid #e5e7eb;background:#fff">
           <div style="font-size:9.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px">Munka részletei</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px">
-            <span style="font-size:12px;font-weight:600;color:#dc2626;background:#fff1f2;padding:4px 12px;border-radius:20px">Vaillant ecoTEC Plus 28</span>
-            <span style="font-size:12px;font-weight:600;color:#dc2626;background:#fff1f2;padding:4px 12px;border-radius:20px">F75 hibakód</span>
-            <span style="font-size:12px;font-weight:600;color:#dc2626;background:#fff1f2;padding:4px 12px;border-radius:20px">8 éves készülék</span>
-            <span style="font-size:12px;font-weight:600;color:#dc2626;background:#fff1f2;padding:4px 12px;border-radius:20px">Kombinált kazán</span>
-            <span style="font-size:12px;font-weight:600;color:#dc2626;background:#fff1f2;padding:4px 12px;border-radius:20px">4 szoba + fürdő</span>
-            <span style="font-size:12px;font-weight:600;color:#7f1d1d;background:#fee2e2;border:1px solid #fecaca;padding:4px 12px;border-radius:20px">🔥 Sürgős</span>
+            <span style="font-size:12px;font-weight:600;color:#dc2626;background:#fff1f2;padding:4px 12px;border-radius:20px">Vaillant ecoTEC Plus VUI 35</span>
+            <span style="font-size:12px;font-weight:600;color:#dc2626;background:#fff1f2;padding:4px 12px;border-radius:20px">F75 hibakód — 0 bar</span>
+            <span style="font-size:12px;font-weight:600;color:#dc2626;background:#fff1f2;padding:4px 12px;border-radius:20px">220 m² · 12 radiátor</span>
+            <span style="font-size:12px;font-weight:600;color:#dc2626;background:#fff1f2;padding:4px 12px;border-radius:20px">Szivattyú + tartály csere</span>
+            <span style="font-size:12px;font-weight:600;color:#dc2626;background:#fff1f2;padding:4px 12px;border-radius:20px">CO-mérés + kémény vizsg.</span>
+            <span style="font-size:12px;font-weight:600;color:#dc2626;background:#fff1f2;padding:4px 12px;border-radius:20px">12 hó prémium szerződés</span>
+            <span style="font-size:12px;font-weight:600;color:#7f1d1d;background:#fee2e2;border:1px solid #fecaca;padding:4px 12px;border-radius:20px">🔥 Sürgős — 12°C, 2 gyerek</span>
           </div>
+        </div>
+
+        <div style="padding:12px 16px;border-bottom:1px solid #e5e7eb">
+          <div style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px">Felismert igények</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            ${EST.extras.map(e => `
+              <div style="background:#fff1f2;border-radius:10px;padding:7px 10px;display:flex;align-items:center;gap:6px">
+                <span style="font-size:13px">${e.icon}</span>
+                <div>
+                  <div style="font-size:9.5px;color:#9f1239;font-weight:600">${esc(e.label)}</div>
+                  <div style="font-size:11px;color:#dc2626;font-weight:600">${esc(e.val)}</div>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>
+
+        <div style="padding:12px 16px;border-bottom:1px solid #e5e7eb;background:#fff">
+          <div style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px">Tételes bontás</div>
+          ${EST.items.map((item,i) => `
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;${i<EST.items.length-1?'border-bottom:1px solid #f3f4f6':''}">
+              <div style="flex:1;margin-right:10px">
+                <div style="font-size:11.5px;color:#111827;font-weight:500">${esc(item.label)}</div>
+                <div style="font-size:10px;color:#9ca3af;margin-top:1px">${esc(item.note)}</div>
+              </div>
+              <div style="font-size:12px;font-weight:700;color:#7f1d1d;flex-shrink:0">${huf(item.amt)}</div>
+            </div>`).join('')}
         </div>
 
         <div style="padding:12px 16px;background:#f8fafc">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
             <span style="font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:.12em;font-weight:600">Érdeklődő pontszám</span>
             <div style="display:flex;align-items:center;gap:7px">
-              <span style="font-size:22px;font-weight:900;color:#dc2626;letter-spacing:-0.5px">92<span style="font-size:12px;font-weight:600;color:#9ca3af">/100</span></span>
+              <span style="font-size:22px;font-weight:900;color:#dc2626;letter-spacing:-0.5px">95<span style="font-size:12px;font-weight:600;color:#9ca3af">/100</span></span>
               <span style="font-size:10.5px;font-weight:700;color:#fff;background:#dc2626;padding:3px 10px;border-radius:20px">Prémium Érdeklődő</span>
             </div>
           </div>
           <div style="height:6px;border-radius:3px;background:#e5e7eb;overflow:hidden">
-            <div style="height:100%;width:92%;background:linear-gradient(90deg,#fca5a5,#dc2626);border-radius:3px"></div>
+            <div style="height:100%;width:95%;background:linear-gradient(90deg,#fca5a5,#dc2626);border-radius:3px"></div>
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <div style="padding:10px 18px 0">
+      <div style="background:#fff1f2;border:1px solid #fecaca;border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px">🔥</span>
+        <div>
+          <div style="font-size:9.5px;color:#b91c1c;text-transform:uppercase;letter-spacing:.1em;font-weight:600">Prioritás</div>
+          <div style="font-size:13px;font-weight:700;color:#b91c1c">${esc(EST.timing)}</div>
+        </div>
       </div>
     </div>
 
