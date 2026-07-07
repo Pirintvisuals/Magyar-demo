@@ -193,6 +193,13 @@
     }
     .modal-card::-webkit-scrollbar { width: 3px; }
     .modal-card::-webkit-scrollbar-thumb { background: rgba(13,148,136,0.22); border-radius: 10px; }
+
+    @media (max-width: 480px) {
+      #widget-root { left: 12px; right: 12px; bottom: 16px; }
+      .chat-panel { width: 100%; height: calc(100vh - 96px); border-radius: 18px; }
+      .modal-overlay { padding: 10px; }
+      .modal-card { border-radius: 18px; }
+    }
   </style>
 </head>
 <body>
